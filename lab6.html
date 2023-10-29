@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <title>Список дел</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div>
+    <h1>Список дел</h1>
+    <div>
+      <input type="text" id="todoInput" placeholder="Новый элемент списка">
+      <button id="addButton">Добавить</button>
+      <button id="deleteButton">Удалить всё</button>
+    </div>
+    <div>
+      <ol id="todoList">
+        
+      </ol>
+    </div>
+    <div>
+      <p><a href="#" id="filterAll">Все</a> | <a href="#" id="filterDone">Сделанные</a> | <a href="#" id="filterNotDone">Не сделанные</a></p>
+      <p><a href="#" id="sortButton">Сортировать по наименованию</a></p>
+    </div>
+  </div>
+
+  <script>
+    
+const todoInput = document.getElementById("todoInput");
+const addButton = document.getElementById("addButton");
+const deleteButton = document.getElementById("deleteButton");
+const todoList = document.getElementById("todoList");
+const filterAll = document.getElementById("filterAll");
+const filterDone = document.getElementById("filterDone");
+const filterNotDone = document.getElementById("filterNotDone");
+const sortButton = document.getElementById("sortButton");
+
+let todos = [];
+
+function renderTodos() {
+  todoList.innerHTML = "";
+
+  for (let i = 0; i < todos.length; i++) {
+    const todo = todos[i];
+
+    const li = document.createElement("li");
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = todo.done;
+    const label = document.createElement("label");
+    label.appendChild(checkbox);
+    label.appendChild(document.createTextNode(todo.name));
+    const deleteBtn = document.createElement("button");
+    deleteBtn.innerText = "✖";
+
+    li.appendChild(label);
+    li.appendChild(deleteBtn);
+
+    if (todo.done) {
+      li.classList.add("done");
+    }
+
+    deleteBtn.addEventListener("click", () => {
+      removeTodo(i);
+    });
+
+    checkbox.addEventListener("change", () => {
+      todo.done = checkbox.checked;
+      li.classList.toggle("done");
+    });
+
+    todoList.appendChild(li);
+  }
+}
+
+function addTodo(name) {
+  if (name) {
+    todos.push({ name, done: false });
+    todoInput.value = "";
+    renderTodos();
+  }
+}
+
+function removeTodo(index) {
+  todos.splice(index, 1);
+  renderTodos();
+}
+
+addButton.addEventListener("click", () => {
+  addTodo(todoInput.value);
+});
+
+deleteButton.addEventListener("click", () => {
+  todos = todos.filter(todo => !todo.done);
+  renderTodos();
+});
+
+filterAll.addEventListener("click", () => {
+  renderTodos();
+});
+
+filterDone.addEventListener("click", () => {
+  const doneTodos = todos.filter(todo => todo.done);
+  renderFiltered(doneTodos);
+});
+
+filterNotDone.addEventListener("click", () => {
+  const notDoneTodos = todos.filter(todo => !todo.done);
+  renderFiltered(notDoneTodos);
+});
+
+sortButton.addEventListener("click", () => {
+  todos.sort((a, b) => a.name.localeCompare(b.name));
+  renderTodos();
+});
+
+function renderFiltered(filteredTodos) {
+  todoList.innerHTML = "";
+
+  for (let i = 0; i < filteredTodos.length; i++) {
+    const todo = filteredTodos[i];
+
+    const li = document.createElement("li");
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = todo.done;
+    const label = document.createElement("label");
+    label.appendChild(checkbox);
+    label.appendChild(document.createTextNode(todo.name));
+    const deleteBtn = document.createElement("button");
+    deleteBtn.innerText = "✖";
+
+    li.appendChild(label);
+    li.appendChild(deleteBtn);
+
+    if (todo.done) {
+      li.classList.add("done");
+    }
+
+    deleteBtn.addEventListener("click", () => {
+      removeFilteredTodo(todo);
+    });
+
+    checkbox.addEventListener("change", () => {
+      todo.done = checkbox.checked;
+      li.classList.toggle("done");
+    });
+
+    todoList.appendChild(li);
+  }
+}
+
+function removeFilteredTodo(todo) {
+  todos = todos.filter(t => t !== todo);
+  renderFiltered(todos);
+}
+
+renderTodos();
+
+deleteButton.addEventListener("click", () => {
+        todos = [];
+        renderTodos();
+    });
+
+  </script>
+</body>
+</html>
